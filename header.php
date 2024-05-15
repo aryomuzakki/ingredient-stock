@@ -2,7 +2,7 @@
   if(isset($_POST['logout'])){
       session_start();
       $_SESSION['logged_in'] = false;
-      header('location: '.$base_url.'index.php');
+      header('location: index.php');
       die("logging out");
   }
 ?>

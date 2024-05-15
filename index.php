@@ -2,8 +2,8 @@
 <?php
     // Code ni para sa LOGIN 
     session_start();
-    if($_SESSION['logged_in'] === true){
-      header('location: '.$base_url.'home.php');
+    if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true){
+      header('location: home.php');
       die("already log in");
     }
     if(isset($_POST['login'])){
@@ -20,7 +20,7 @@
                     $_SESSION['get_address'] = DB::query('SELECT Address FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0]['Address'];
                     $_SESSION['get_position'] = DB::query('SELECT Position FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0]['Position'];
                     $_SESSION['logged_in'] = true;
-                    header('Location: '.$base_url.'home.php');
+                    header('Location: home.php');
                     die("should logged in");
             }
             else{

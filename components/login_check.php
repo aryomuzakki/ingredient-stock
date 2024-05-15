@@ -3,7 +3,7 @@
 <?php
   session_start();
   if($_SESSION['logged_in'] != true){
-    header('location: '.$base_url.'index.php');
+    header('location: index.php');
     die("in header, should have redirect to index because not logged in");
   }
   else{
