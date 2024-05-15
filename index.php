@@ -2,7 +2,7 @@
 <?php
     // Code ni para sa LOGIN 
     session_start();
-    if($_SESSION['logged_in'] === true){
+    if(isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true){
       header('location: '.$base_url.'home.php');
       die("already log in");
     }

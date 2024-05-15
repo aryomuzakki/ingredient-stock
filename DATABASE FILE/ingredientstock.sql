@@ -43,7 +43,7 @@ INSERT INTO `account_registration` (`Fullname`, `Age`, `Address`, `Position`, `U
 ('Derek Moore', 25, '4840 Southside Lane', 'USER', 'moore', '5f4dcc3b5aa765d61d8327deb882cf99'),
 ('Luis L McHugh', 28, '1029 Elk Creek Road', 'USER', 'luis', '827CCB0EEA8A706C4C34A16891F84E7B'),
 ('Nicholas P Perrault', 31, '3675 Sharon Lane', 'ADMIN', 'nicholas', 'e10adc3949ba59abbe56e057f20f883e'),
-('Stephen K Franco', 29, '4076 Havanna Street', 'ADMIN', 'stephen', 'e10adc3949ba59abbe56e057f20f883e');
+('Stephen K Franco', 29, '4076 Havanna Street', 'ADMIN', 'stephen', 'e10adc3949ba59abbe56e057f20f883e'),
 ('KEFI CAFE AND SPACE', 20, 'Komplek Classic II, Blok A No. 1, Jl. Abdul Hakim, Tj. Sari', 'ADMIN', 'keficafe', '5e3b5769c7fcbf225b383dc2df9ef62f');
 
 -- --------------------------------------------------------
@@ -57,6 +57,7 @@ CREATE TABLE `stock_ingredients` (
   `ItemName` varchar(255) NOT NULL,
   `Category` varchar(255) NOT NULL,
   `Quantity` int(11) NOT NULL,
+  `Unit` varchar(255) NOT NULL,
   `Date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -64,21 +65,21 @@ CREATE TABLE `stock_ingredients` (
 -- Dumping data for table `stock_ingredients`
 --
 
-INSERT INTO `stock_ingredients` (`Id`, `ItemName`, `Category`, `Quantity`, `Date`) VALUES
-(4, 'Egg', 'Others', 38, '2018-04-12'),
-(6, 'Cabbage', 'Vegetables', 17, '2018-04-12'),
-(8, 'Lettuce', 'Vegetables', 15, '2021-07-15'),
-(9, 'Ham', 'Meat', 15, '2021-07-15'),
-(10, 'Kiwi', 'Fruits', 17, '2021-07-15'),
-(11, 'Shrimp', 'Sea Food', 48, '2021-07-16'),
-(12, 'Yeast', 'Others', 21, '2021-07-17'),
-(16, 'Mozzarella', 'DairyProducts', 21, '2021-07-18'),
-(17, 'Beef', 'Meat', 36, '2021-07-19'),
-(18, 'Broccoli', 'Vegetables', 27, '2021-07-19'),
-(19, 'Blueberries', 'Fruits', 11, '2021-07-19'),
-(20, 'Cream', 'DairyProducts', 18, '2021-07-19'),
-(21, 'Squids', 'Sea Food', 51, '2021-07-19'),
-(22, 'Quinoa', 'Others', 27, '2021-07-19');
+INSERT INTO `stock_ingredients` (`Id`, `ItemName`, `Category`, `Quantity`, `Unit`, `Date`) VALUES
+(4, 'Egg', 'Others', 38, "Pieces", '2018-04-12'),
+(6, 'Cabbage', 'Vegetables', 17, "Pieces", '2018-04-12'),
+(8, 'Lettuce', 'Vegetables', 15, "Pieces", '2021-07-15'),
+(9, 'Ham', 'Meat', 15, "Pieces", '2021-07-15'),
+(10, 'Kiwi', 'Fruits', 17, "Pieces", '2021-07-15'),
+(11, 'Shrimp', 'Sea Food', 48, "Pieces", '2021-07-16'),
+(12, 'Yeast', 'Others', 21, "Pieces", '2021-07-17'),
+(16, 'Mozzarella', 'DairyProducts', 21, "Pieces", '2021-07-18'),
+(17, 'Beef', 'Meat', 36, "Pieces", '2021-07-19'),
+(18, 'Broccoli', 'Vegetables', 27, "Pieces", '2021-07-19'),
+(19, 'Blueberries', 'Fruits', 11, "Pieces", '2021-07-19'),
+(20, 'Cream', 'DairyProducts', 18, "Pieces", '2021-07-19'),
+(21, 'Squids', 'Sea Food', 51, "Pieces", '2021-07-19'),
+(22, 'Quinoa', 'Others', 27, "Pieces", '2021-07-19');
 
 --
 -- Indexes for dumped tables
