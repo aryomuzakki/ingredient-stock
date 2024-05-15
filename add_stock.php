@@ -26,7 +26,9 @@
       }
     }
     else{
-      
+      $_SESSION["warning_msg"] = "Your Old Password did not match! Try again...";
+      header("Location: add_stock.php");
+      die("old password not match");
     }
   }
 
