@@ -38,7 +38,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-  <title>Ingredients Stock Management System</title>
+  <title>Ingredient Stock Management System</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
@@ -53,7 +53,7 @@
     <div class="container">
       <div class="container" id="title_container">
         <div class="container-fluid">
-          <h1 class="brand">Ingredients Stock Management System</h1>
+          <h1 class="brand">Ingredient Stock Management System</h1>
         </div>
         <div class="btn -group">
           <a class="btn btn-success" href="#" data-toggle="modal" data-target="#contact"><span class="fa fa-phone"></span>&nbsp;Contact Us</a>

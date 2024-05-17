@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
   <head>
-  <title>Ingredients Stock Management System | Add Stock</title>
+  <title>Ingredient Stock Management System | Add Stock</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -88,7 +88,7 @@
 
     <div class="container">
       <div class="container-fluid">
-        <h3>Ingredients Stock Manager</h3>
+        <h3>Ingredient Stock Manager</h3>
       </div>
     </div>
 
@@ -125,7 +125,7 @@
       <div class="row">
         <div class="col-sm-4">
           <div class="panel panel-default">
-            <div class="panel-heading"><span class="fa fa-area-chart"></span>&nbsp;&nbsp;Ingredients Stock Manager</div>
+            <div class="panel-heading"><span class="fa fa-area-chart"></span>&nbsp;&nbsp;Ingredient Stock Manager</div>
             <div class="panel-body">
               <div class="col-sm-15">
                 <form class="form-inline" action="stock_manager.php" method="POST">
@@ -214,7 +214,7 @@
                             echo '
                                   <form action="" method="POST">
                                     <tr>
-                                      <td><input id="readonly" type="text" name="txtSelect" value='. $posting['ItemName'] .' readonly></td>
+                                      <td><input class="editable" type="text" name="txtSelect" value="'. $posting['ItemName'] .'" readonly></td>
                                       <td>'. $posting['Category'] .'</td>
                                       <td>'. $posting['Quantity'] .'</td>
                                       <td>'. $posting['Date'] .'</td>
