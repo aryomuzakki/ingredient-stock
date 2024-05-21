@@ -81,6 +81,51 @@
     header("Location: ingredient.php");
     die("updated");
   }
+
+  // data fetching
+  $sortBy = $_GET["sb"] ?? "Id";
+  $sortDir = array("1"=>"ASC", "2"=>"DESC")[$_GET["sd"] ?? "2"] ?? "DESC";
+
+  $limit = intval($_GET["l"] ?? 25);
+  $page = intval($_GET["p"] ?? 1);
+  $offset = $limit * ($page - 1);
+
+  $whereString = "";
+  if (isset($_GET["query"])) {
+    $query = $_GET["query"];
+    $whereString = " WHERE ItemName LIKE '%".$query."%'
+      OR Category LIKE '%".$query."%'
+      OR Date LIKE '%".$query."%'
+      OR Quantity LIKE '%".$query."%'
+      OR Unit LIKE '%".$query."%'
+    ";
+  }
+
+  $totalRowCount = $mysqli->query("SELECT COUNT(1) FROM stock_ingredients ")->fetch_assoc()["COUNT(1)"];
+  $totalFilteredRow = $mysqli->query("SELECT COUNT(1) FROM stock_ingredients ".$whereString)->fetch_assoc()["COUNT(1)"];
+  $totalPage = intval(ceil($totalFilteredRow / $limit));
+  if ($totalPage > 0 && $page > $totalPage) {
+    header("Location: ingredient.php");
+    die("refresh");
+  }
+  $posts_display = $mysqli->query("SELECT * FROM stock_ingredients ".$whereString." ORDER BY ".$sortBy." ".$sortDir." LIMIT ".$limit." OFFSET ".$offset);
+  $fetchedRowCount = $posts_display->num_rows;
+  // var_dump($totalPage);
+  $firstRowNum = $totalPage > 0 ? (1 + $offset) : 0;
+
+  // list category
+  $category_list = $mysqli->query("SELECT * FROM tb_category ORDER BY Id ASC");
+  $category_opts = "";
+  while($category = $category_list->fetch_assoc()){                                     
+    $category_opts .= '<option value="'.$category['CategoryName'].'">'.$category['CategoryName'].'</option>';
+  }
+
+  // list unit
+  $unit_list = $mysqli->query("SELECT * FROM tb_unit ORDER BY Id ASC");
+  $unit_opts = "";
+  while($unit = $unit_list->fetch_assoc()){                                     
+    $unit_opts .= '<option value="'.$unit['UnitName'].'">'.$unit['UnitName'].'</option>';
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -232,11 +277,24 @@
             </div>
           </div>
           <div class="">
-            <form action="" class="filter-form">
-              <div class="search-wrapper">
-                <label for="search" class="control-label">Cari</label>
-                <input type="text" class="form-control" name="search" id="search">
-              </div>
+            <div class="filter-wrapper">
+              <form action="" class="query-form">
+                <label for="query" class="control-label">Cari</label>
+                <input type="text" class="form-control" name="query" id="query" value="<?php echo $_GET["query"] ?? "" ?>" required>
+                <button type="submit" class="btn btn-info btn-sm">
+                  Cari
+                </button>
+              </form>
+              <?php 
+                if (isset($_GET["query"])) {
+                  echo '
+                  <form action="" class="reset-query-form">
+                    <button type="submit" class="btn btn-danger btn-sm">
+                      Hapus Filter
+                    </button>
+                  </form>';
+                }
+              ?>
               <div class="max-row-wrapper">
                 <label for="max_row" class="control-label">Baris</label>
                 <div style="max-width: max-content;">
@@ -250,7 +308,12 @@
                   </select>
                 </div>
               </div>
-            </form>
+            </div>
+            <div class="page-info">
+              <?php
+                echo "Halaman ".$page." dari ".$totalPage.". Menampilkan baris ".$firstRowNum."-".($offset + $fetchedRowCount).($whereString === "" ? " dari total ".$totalRowCount." baris." : " dari ".$totalFilteredRow." baris yang ditemukan. Total data : ".$totalRowCount." baris.");
+              ?>
+            </div>
             <div class="panel panel-danger" id="panel_table">
               <div class="panel-heading">Ingredient Stock List</div>
               <div class="panel-body">
@@ -317,27 +380,12 @@
                     </thead>
                     <tbody>
                       <?php
-                        $sortBy = $_GET["sb"] ?? "Id";
-                        $sortDir = array("1"=>"ASC", "2"=>"DESC")[$_GET["sd"] ?? "2"] ?? "DESC";
-
-                        $limit = $_GET["l"] ?? "25";
-                        $posts_display = $mysqli->query("SELECT * FROM stock_ingredients ORDER BY ".$sortBy." ".$sortDir." LIMIT ".$limit);
-                        $no = 1;
-
-                        // list category
-                        $category_list = $mysqli->query("SELECT * FROM tb_category ORDER BY Id ASC");
-                        $category_opts = "";
-                        while($category = $category_list->fetch_assoc()){                                     
-                          $category_opts .= '<option value="'.$category['CategoryName'].'">'.$category['CategoryName'].'</option>';
+                        $no = $firstRowNum;
+                        if ($fetchedRowCount < 1) {
+                          echo '
+                            <tr><td colspan="6" style="text-align: left; font-style: italic; padding: 2rem;">Kosong.</td></tr>
+                          ';
                         }
-
-                        // list unit
-                        $unit_list = $mysqli->query("SELECT * FROM tb_unit ORDER BY Id ASC");
-                        $unit_opts = "";
-                        while($unit = $unit_list->fetch_assoc()){                                     
-                          $unit_opts .= '<option value="'.$unit['UnitName'].'">'.$unit['UnitName'].'</option>';
-                        }
-                        
                         while($posting = $posts_display->fetch_assoc()){
                           echo '
                             <form class="form" action="ingredient.php" method="post">
@@ -377,7 +425,66 @@
                     </tbody>
                   </table>
                 </div>
+                <nav aria-label="Page navigation" class="pagination-wrapper">
+                  <ul class="pagination">
+                    <?php if ($page === 1) {
+                      echo '
+                        <li class="disabled">
+                          <span aria-label="Previous">
+                            <span aria-hidden="true">&lt;</span>
+                          </span>
+                        </li>
+                      ';
+                    } else {
+                        echo '
+                          <li>
+                            <a href="?p='.($page - 1).'" data-p="'.($page - 1).'" aria-label="Previous">
+                              <span aria-hidden="true">&lt;</span>
+                            </a>
+                          </li>
+                        ';
+                      }
+                    ?>
+                    <?php
+                    if ($totalPage>1) {
+                      for ($i = 1; $i <= $totalPage; $i++) {
+                        if ($page === $i) {
+                          echo '<li class="active"><span>'.$i.'</span></li>';
+                        } else {
+                          echo '<li><a href="?p='.$i.'" data-p="'.$i.'">'.$i.'</a></li>';
+                        }
+                      }
+                    } else {
+                      echo '<li class="active"><span>1</span></li>';
+                    }
+                    ?>
+                    <?php 
+                      if ($page === $totalPage) {
+                        echo '
+                          <li class="disabled">
+                            <span aria-label="Next">
+                              <span aria-hidden="true">&gt;</span>
+                            </span>
+                          </li>
+                        ';
+                      } else {
+                        echo '
+                          <li>
+                            <a href="?p='.($page + 1).'" data-p="'.($page + 1).'" aria-label="Next">
+                              <span aria-hidden="true">&gt;</span>
+                            </a>
+                          </li>
+                        ';
+                      }
+                    ?>
+                  </ul>
+                </nav>
               </div>
+            </div>
+            <div class="page-info" style="margin-bottom: 20px;">
+              <?php
+                echo "Halaman ".$page." dari ".$totalPage.". Menampilkan baris ".$firstRowNum."-".($offset + $fetchedRowCount).($whereString === "" ? " dari total ".$totalRowCount." baris." : " dari ".$totalFilteredRow." baris yang ditemukan. Total data : ".$totalRowCount." baris.");
+              ?>
             </div>
           </div>
         </div>
@@ -509,23 +616,48 @@
             
             let sortDir = parseInt(ev.target.dataset.sortDir);
             const newSortDir = (sortDir < 2 ? ++sortDir : 0).toString();
-            ev.target.dataset.sortDir = newSortDir;
+            // ev.target.dataset.sortDir = newSortDir;
+            // set on page load instead
             
-            const urlWithLimit = new URL(window.location.href);
+            const urlWithSort = new URL(window.location.href);
             if (newSortDir === "0") {
-              urlWithLimit.searchParams.delete("sb");
-              urlWithLimit.searchParams.delete("sd");
+              urlWithSort.searchParams.delete("sb");
+              urlWithSort.searchParams.delete("sd");
             } else {
-              urlWithLimit.searchParams.set("sb", ev.target.dataset.sortBy);
-              urlWithLimit.searchParams.set("sd", newSortDir);
+              urlWithSort.searchParams.set("sb", ev.target.dataset.sortBy);
+              urlWithSort.searchParams.set("sd", newSortDir);
             }
-            console.log(urlWithLimit.href);
-            // reset all other sort dir
-            sortableBtns.forEach((sBtn, id) => {
-              if (id === idx) return;
-              sBtn.dataset.sortDir = "0";
-            });
-            // window.location = urlWithLimit;
+            console.log(urlWithSort.href);
+
+            // // reset all other sort dir
+            // sortableBtns.forEach((sBtn, id) => {
+            //   if (id === idx) return;
+            //   sBtn.dataset.sortDir = "0";
+            // });
+            // set when page load instead
+
+            window.location = urlWithSort;
+          });
+        });
+        sortableBtns.forEach((sortableBtn, idx) => {
+          const currentURL = new URL(window.location.href);
+          const sb = currentURL.searchParams.get("sb");
+          const sd = currentURL.searchParams.get("sd");
+          if (sortableBtn.dataset.sortBy === sb) {
+            sortableBtn.dataset.sortDir = sd || "1";
+          } else {
+            sortableBtn.dataset.sortDir = "0";
+          }
+        });
+
+        // pagination
+        const pageBtns = document.querySelectorAll(".pagination li>a");
+        pageBtns.forEach((pageBtn) => {
+          pageBtn.addEventListener("click", (ev)=>{
+            ev.preventDefault();
+            const urlWithPagination = new URL(window.location);
+            urlWithPagination.searchParams.set("p", pageBtn.dataset.p);
+            window.location = urlWithPagination;
           });
         });
        

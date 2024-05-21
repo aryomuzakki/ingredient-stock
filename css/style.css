@@ -145,11 +145,35 @@ h3 {
 }
 
 /* filter */
-.filter-form {
+.filter-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.query-form {
   display: flex;
+  margin: 1rem 0;
+}
+
+.query-form>*:not(:first-child) {
+  margin-left: 1rem;
+}
+
+.reset-query-form {
+  margin: 1rem 0;
 }
 
 /* end of filter */
+
+/* page info */
+
+.page-info {
+  text-align: center;
+  color: #333333;
+  font-size: 1.25rem;
+  margin: .25rem 0;
+}
+
+/* end of page info */
 
 /* end of ingredient */
 
@@ -192,7 +216,7 @@ table.table input[type=number]::-webkit-outer-spin-button {
 
 /* table style */
 
-table.table>thead>tr>th>button {
+table.table>thead>tr>th.sortable-column>button {
   width: 100%;
   height: 100%;
   border: 1px solid #cccccc;
@@ -202,14 +226,15 @@ table.table>thead>tr>th>button {
   padding: 3px 6px;
 }
 
-table.table>thead>tr>th>button:hover {
+table.table>thead>tr>th.sortable-column>button:hover {
   background-color: #f5f5f5;
 }
-table.table>thead>tr>th>button:active {
+
+table.table>thead>tr>th.sortable-column>button:active {
   background-color: #ebebeb;
 }
 
-table.table>thead>tr>th>button>div {
+table.table>thead>tr>th.sortable-column>button>div {
   display: flex;
   flex-direction: column;
   /* align-items: center; */
@@ -217,8 +242,20 @@ table.table>thead>tr>th>button>div {
   margin-left: 8px;
 }
 
-table.table>thead>tr>th>button>div>.fa {
+table.table>thead>tr>th.sortable-column>button>div>.fa {
   line-height: 0.5;
+}
+
+table.table>thead>tr>th.sortable-column>button>div>.fa {
+  color: #00000080;
+}
+
+table.table>thead>tr>th.sortable-column>button[data-sort-dir="1"]>div>.fa:first-child {
+  color: #000000;
+}
+
+table.table>thead>tr>th.sortable-column>button[data-sort-dir="2"]>div>.fa:last-child {
+  color: #000000;
 }
 
 table.table .quantity {
@@ -305,7 +342,7 @@ table.table>tbody>tr>td.sticky-col-2::after {
   /* sticky column in table */
   table.table>thead>tr>th.sticky-col-2,
   table.table>tbody>tr>td.sticky-col-2 {
-    left: 35px;
+    left: 65px;
   }
 
   /* for scrollable in table */
@@ -315,6 +352,22 @@ table.table>tbody>tr>td.sticky-col-2::after {
 }
 
 /* end of table style */
+
+/* pagination */
+nav.pagination-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1rem 0;
+}
+
+ul.pagination {
+  display: block;
+  margin: 0;
+}
+
+/* end of pagination */
 
 /* end of costumize */
 
