@@ -11,7 +11,7 @@
     <div class="container-fluid">
       <h1 class="brand">Ingredient Stock Management System</h1>
     </div>
-    <?php if($_SESSION['get_position'] != 'USER') {?>
+    <?php if($_SESSION['get_position'] != 'STAFF') {?>
     <div class="btn-group">
       <a class="btn btn-default" href="home.php"><span class="fa fa-home"></span>&nbsp;&nbsp;Home</a>
       <a class="btn btn-default" href="ingredient.php"><span class="fa fa-cart-plus"></span>&nbsp;&nbsp;Manage Ingredient</a>

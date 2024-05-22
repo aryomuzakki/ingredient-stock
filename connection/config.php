@@ -7,4 +7,7 @@
   $db_username = $env["DB_USERNAME"] ?? "root";
   $db_password = $env["DB_PASSWORD"] ?? "";
   $db_name = $env["DB_NAME"] ?? "db_ingredientstock";
+
+  // timezone
+  date_default_timezone_set("Asia/Jakarta");
 ?>

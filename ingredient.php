@@ -39,13 +39,13 @@
     $category = $_POST['category'];
     $quantity = $_POST['quantity'];
     $unit = $_POST['unit'];
-    $date  = $_POST['date'];
+    $updated_at  = $_POST['updated_at'];
 
     if(!DB::query('SELECT ItemName FROM stock_ingredients WHERE ItemName=:ItemName', array(':ItemName'=>$item_name))){
 
-      DB::query('INSERT INTO stock_ingredients (ItemName, Category, Quantity, Unit, Date)
-                          VALUES(:ItemName, :Category, :Quantity, :Unit, :Date)',
-                          array(':ItemName'=>$item_name, ':Category'=>$category, ':Quantity'=>$quantity, ':Unit'=>$unit, ':Date'=>$date));
+      DB::query('INSERT INTO stock_ingredients (ItemName, Category, Quantity, Unit, UpdatedAt, UserId)
+                          VALUES(:ItemName, :Category, :Quantity, :Unit, :UpdatedAt, :UserId)',
+                          array(':ItemName'=>$item_name, ':Category'=>$category, ':Quantity'=>$quantity, ':Unit'=>$unit, ':UpdatedAt'=>$updated_at, ":UserId"=>$logged_account["user_id"]));
 
       $_SESSION["success_msg"] = "Item Added Successfully!";
       header("Location: ingredient.php");
@@ -75,8 +75,9 @@
     $display_item_category = $_POST['display_item_category'] ?? null;
     $display_item_quantity = $_POST['display_item_quantity'] ?? null;
     $display_item_unit = $_POST['display_item_unit'] ?? null;
+    $updated_at = (new DateTime("now"))->format('Y-m-d H:i:sP');
 
-    DB::query('UPDATE stock_ingredients SET ItemName=:ItemName, Category=:Category, Quantity=:Quantity, Unit=:Unit WHERE Id=:Id', array(':ItemName'=>$display_item_name, ':Category'=>$display_item_category, ':Quantity'=>$display_item_quantity, ':Unit'=>$display_item_unit, ':Id'=>$display_id));
+    DB::query('UPDATE stock_ingredients SET ItemName=:ItemName, Category=:Category, UserId=:UserId, UpdatedAt=:UpdatedAt, Quantity=:Quantity, Unit=:Unit WHERE Id=:Id', array(':ItemName'=>$display_item_name, ':Category'=>$display_item_category, ':UserId'=>$logged_account['user_id'], ':UpdatedAt'=>$updated_at, ':Quantity'=>$display_item_quantity, ':Unit'=>$display_item_unit, ':Id'=>$display_id));
     $_SESSION["success_msg"] = "Item Updated Successfully!";
     header("Location: ingredient.php");
     die("updated");
@@ -95,7 +96,7 @@
     $query = $_GET["query"];
     $whereString = " WHERE ItemName LIKE '%".$query."%'
       OR Category LIKE '%".$query."%'
-      OR Date LIKE '%".$query."%'
+      OR UpdateAt LIKE '%".$query."%'
       OR Quantity LIKE '%".$query."%'
       OR Unit LIKE '%".$query."%'
     ";
@@ -108,7 +109,8 @@
     header("Location: ingredient.php");
     die("refresh");
   }
-  $posts_display = $mysqli->query("SELECT * FROM stock_ingredients ".$whereString." ORDER BY ".$sortBy." ".$sortDir." LIMIT ".$limit." OFFSET ".$offset);
+  $posts_display = $mysqli->query("SELECT i.Id, i.ItemName, tc.CategoryName, i.UpdatedAt, a.Fullname, i.Quantity, tu.UnitName
+  FROM stock_ingredients as i LEFT JOIN account_registration as a ON i.UserId = a.Id LEFT JOIN tb_unit as tu ON i.UnitId = tu.Id LEFT JOIN tb_category as tc ON i.CategoryId = tc.Id ".$whereString." ORDER BY ".$sortBy." ".$sortDir." LIMIT ".$limit." OFFSET ".$offset);
   $fetchedRowCount = $posts_display->num_rows;
   // var_dump($totalPage);
   $firstRowNum = $totalPage > 0 ? (1 + $offset) : 0;
@@ -117,15 +119,23 @@
   $category_list = $mysqli->query("SELECT * FROM tb_category ORDER BY Id ASC");
   $category_opts = "";
   while($category = $category_list->fetch_assoc()){                                     
-    $category_opts .= '<option value="'.$category['CategoryName'].'">'.$category['CategoryName'].'</option>';
+    $category_opts .= '<option value="'.$category['Id'].'">'.$category['CategoryName'].'</option>';
   }
 
   // list unit
   $unit_list = $mysqli->query("SELECT * FROM tb_unit ORDER BY Id ASC");
   $unit_opts = "";
   while($unit = $unit_list->fetch_assoc()){                                     
-    $unit_opts .= '<option value="'.$unit['UnitName'].'">'.$unit['UnitName'].'</option>';
+    $unit_opts .= '<option value="'.$unit['Id'].'">'.$unit['UnitName'].'</option>';
   }
+  
+  // // list user
+  // $user_list = $mysqli->query("SELECT * FROM account_registration ORDER BY Id ASC");
+  // $user_arary = array();
+  // while($user = $user_list->fetch_assoc()){                                     
+  //   $user_array;
+  // }
+
 ?>
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -221,15 +231,7 @@
                   <div class="form-group">
                     <label for="category">Category</label>
                     <select class="with-selectize form-control" id="category" name="category" required>
-                      <option value="">--Please Select--</option>
-                      <option value="Bread">Bread</option>
-                      <option value="Meat">Meat</option>
-                      <option value="Sea Food">Sea Food</option>
-                      <option value="Patty">Patty</option>
-                      <option value="Fruits">Fruits</option>
-                      <option value="Vegetables">Vegetables</option>
-                      <option value="DairyProducts">Dairy Products</option>
-                      <option value="Lainnya">Lainnya</option>
+                      <?php echo $category_opts ?>
                     </select>
                   </div>
                   <div class="form-group">
@@ -239,35 +241,12 @@
                   <div class="form-group">
                     <label for="unit">Satuan</label>
                     <select class="with-selectize form-control" id="unit" name="unit" required>
-                      <option value="">--Please Select--</option>
-                      <option value="Kilogram">Kilogram</option>
-                      <option value="Gram">Gram</option>
-                      <option value="Miligram">Miligram</option>
-                      <option value="Ons">Ons</option>
-                      <option value="Liter">Liter</option>
-                      <option value="Mililiter">Mililiter</option>
-                      <option value="Pieces">Pieces</option>
-                      <option value="Butir">Butir</option>
-                      <option value="Papan">Papan</option>
-                      <option value="Lusin">Lusin</option>
-                      <option value="Rol">Rol</option>
-                      <option value="Blok">Blok</option>
-                      <option value="Bal">Bal</option>
-                      <option value="Batang">Batang</option>
-                      <option value="Buah">Buah</option>
-                      <option value="Bungkus">Bungkus</option>
-                      <option value="Pack">Pack</option>
-                      <option value="Kotak">Kotak</option>
-                      <option value="Kaleng">Kaleng</option>
-                      <option value="Botol">Botol</option>
-                      <option value="Tabung">Tabung</option>
-                      <option value="Galon">Galon</option>
-                      <option value="Lainnya">Lainnya</option>
+                      <?php echo $unit_opts ?>
                     </select>
                   </div>
                   <div class="form-group">
-                    <label for="date">Date</label>
-                    <input class="form-control" type="date" min="1" name="date" id="date" required>
+                    <label for="updated_at">Tanggal</label>
+                    <input class="form-control" type="date" min="1" name="updated_at" id="updated_at" required>
                   </div>
                   <div class="form-group">
                     <input class="form-control btn btn-success" style="border-radius:0%;" type="submit" name="add_item" id="add_item" value="Add Item">
@@ -290,7 +269,7 @@
                   echo '
                   <form action="" class="reset-query-form">
                     <button type="submit" class="btn btn-danger btn-sm">
-                      Hapus Filter
+                      Hapus Pencarian
                     </button>
                   </form>';
                 }
@@ -349,8 +328,17 @@
                           </button>
                         </th>
                         <th width="10%" class="sortable-column">
-                          <button type="button" class="flex-middle-between" data-sort-dir="0" data-sort-by="Date">
+                          <button type="button" class="flex-middle-between" data-sort-dir="0" data-sort-by="UpdateAt">
                             Tanggal
+                            <div>
+                              <span class="fa fa-caret-up"></span>
+                              <span class="fa fa-caret-down"></span>
+                            </div>
+                          </button>
+                        </th>
+                        <th width="10%" class="sortable-column">
+                          <button type="button" class="flex-middle-between" data-sort-dir="0" data-sort-by="UserId">
+                            User
                             <div>
                               <span class="fa fa-caret-up"></span>
                               <span class="fa fa-caret-down"></span>
@@ -401,15 +389,16 @@
                                 </td>
                                 <td>
                                   <select class="with-selectize select-in-table" name="display_item_category">
-                                    <option>'. $posting['Category'] .'</option>
+                                    <option>'. $posting['CategoryName'] .'</option>
                                     '.$category_opts.'
-                                    </select>
+                                  </select>
                                 </td>
-                                <td>'. $posting['Date'] .'</td>
+                                <td>'. $posting['UpdatedAt'] .'</td>
+                                <td>'. $posting['Fullname'] .'</td>
                                 <td><input type="number" class="quantity form-control" min="0" value="'. $posting['Quantity'] .'" name="display_item_quantity"></td>
                                 <td>
                                   <select class="with-selectize unit" name="display_item_unit">
-                                    <option>'. $posting['Unit'] .'</option>
+                                    <option>'. $posting['UnitName'] .'</option>
                                     '.$unit_opts.'
                                   </select>
                                 </td>

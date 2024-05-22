@@ -7,6 +7,7 @@
     die("in header, should have redirect to index because not logged in");
   }
   else{
+    $logged_account = array("user_id"=>$_SESSION['user_id']);
     $getfullname = $_SESSION['get_fullname'];
     $getage = $_SESSION['get_age'];
     $getaddress = $_SESSION['get_address'];

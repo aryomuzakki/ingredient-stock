@@ -15,10 +15,12 @@
 
             if(DB::query('SELECT Password FROM account_registration WHERE Username=:Username AND Password=:Password', array(':Username'=>$username, ':Password'=>$password))){
 
-                    $_SESSION['get_fullname'] = DB::query('SELECT Fullname FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0]['Fullname'];
-                    $_SESSION['get_age'] = DB::query('SELECT Age FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0]['Age'];
-                    $_SESSION['get_address'] = DB::query('SELECT Address FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0]['Address'];
-                    $_SESSION['get_position'] = DB::query('SELECT Position FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0]['Position'];
+                    $logged_data = DB::query('SELECT Id, Fullname, Age, Address, Position FROM account_registration WHERE Username=:Username', array(':Username'=>$username))[0];
+                    $_SESSION['user_id'] = $logged_data['Id'];
+                    $_SESSION['get_fullname'] =$logged_data['Fullname'];
+                    $_SESSION['get_age'] =$logged_data['Age'];
+                    $_SESSION['get_address'] =$logged_data['Address'];
+                    $_SESSION['get_position'] =$logged_data['Position'];
                     $_SESSION['logged_in'] = true;
                     header('Location: home.php');
                     die("should logged in");
